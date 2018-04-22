@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package sql;
+option go_package = "github.com/micro-grpc/protoc-gen-sqlx/pb/sql;sql";
+
+import "google/protobuf/descriptor.proto";
+
+message ExtraField {
+    string type = 1;
+    string name = 2;
+    string tags = 3;
+}
+
+extend google.protobuf.MessageOptions {
+    SqlxMessageOptions opts = 99901;
+}
+
+message SqlxMessageOptions {
+    bool orm = 1;
+    bool jsonb = 2;
+    bool gorm = 3;
+    string table = 4;
+    string driver = 5;
+    repeated ExtraField include = 6;
+    string request = 7;
+    bool user = 8;
+    bool product = 9;
+}
+
+// Field level specifications
+extend google.protobuf.FieldOptions {
+    SqlxFieldOptions field = 99902;
+}
+message SqlxFieldOptions {
+    string name = 1;
+    string colname  = 2;
+    string type = 3;
+    string tags = 4;
+    bool drop = 5;
+    bool pk = 6;
+    string fk = 7;
+
+}
+
+// To be used in (leiu of) the interceptor
+extend google.protobuf.ServiceOptions {
+    AutoServerOptions server = 99903;
+}
+
+message AutoServerOptions {
+    bool autogen = 1;
+}
+
+extend google.protobuf.MethodOptions {
+    MethodOptions method = 99904;
+}
+
+message MethodOptions {
+    string object_type = 1;
+}
