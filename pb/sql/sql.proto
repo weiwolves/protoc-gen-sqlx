@@ -44,17 +44,17 @@ message SqlxFieldOptions {
 
 // To be used in (leiu of) the interceptor
 extend google.protobuf.ServiceOptions {
-    AutoServerOptions server = 99903;
+    SqlxServiceOptions server = 99903;
 }
 
-message AutoServerOptions {
+message SqlxServiceOptions {
     bool autogen = 1;
 }
 
 extend google.protobuf.MethodOptions {
-    MethodOptions method = 99904;
+    SqlxMethodOptions method = 99904;
 }
 
-message MethodOptions {
-    string object_type = 1;
+message SqlxMethodOptions {
+    bool jsonb = 1;
 }

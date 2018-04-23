@@ -264,8 +264,8 @@ func (p *SqlxPlugin) generateMBboxStructure(message *generator.Descriptor, sqlDr
 	p.P(`func NewQuery`, typeName, `(verbose int) *Query`, typeName, ` {`)
 	p.P(`p := Query`, typeName, `{
 		Verbose: verbose,
-		field:   ExampleFields(),
-		defFields: ExampleContains(),
+		field:   `, typeName, `Fields(),
+		defFields: `, typeName, `Contains(),
 		limit:   1000,
 		offset:  0,
 		sort:    "id",
