@@ -61,6 +61,9 @@ func (p *SqlxPlugin) GenerateImports(file *generator.FileDescriptor) {
 	//}
 
 
+	p.PrintImport("log", "github.com/sirupsen/logrus")
+	p.PrintImport("", "github.com/micro-grpc/mbox/lib")
+
 	if p.isJSONB {
 		p.PrintImport("", "encoding/json")
 		p.PrintImport("", "database/sql/driver")
@@ -73,7 +76,7 @@ func (p *SqlxPlugin) GenerateImports(file *generator.FileDescriptor) {
 	}
 	if p.isSqlx {
 		p.PrintImport("", "github.com/jmoiron/sqlx")
-		p.PrintImport("", "github.com/jmoiron/sqlx/reflectx")
+		//p.PrintImport("", "github.com/jmoiron/sqlx/reflectx")
 	}
 	//if p.driver == "postgres" {
 	//	githubImports["sql.postgres"] = "_ \"github.com/lib/pq\""

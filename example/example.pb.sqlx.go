@@ -23,10 +23,11 @@ It has these top-level messages:
 */
 package example
 
+import log "github.com/sirupsen/logrus"
+import "github.com/micro-grpc/mbox/lib"
 import "encoding/json"
 import "database/sql/driver"
 import "github.com/jmoiron/sqlx"
-import "github.com/jmoiron/sqlx/reflectx"
 
 import fmt "fmt"
 import math "math"
@@ -88,7 +89,7 @@ type Result struct {
 func NewQueryExample(verbose int) *QueryExample {
 	p := QueryExample{
 		Verbose:   verbose,
-		field:     ExampleFields(),
+		fields:    ExampleFields(),
 		defFields: ExampleContains(),
 		limit:     1000,
 		offset:    0,
@@ -96,6 +97,7 @@ func NewQueryExample(verbose int) *QueryExample {
 		order:     "ASC",
 	}
 	p.table = p.TableName()
+	p.field = p.DefaultFields()
 	return &p
 }
 
