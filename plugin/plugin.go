@@ -3,14 +3,16 @@ package plugin
 import (
 	"fmt"
 	"github.com/gogo/protobuf/gogoproto"
+	//google_protobuf "google/protobuf"
+	//google_protobuf "code.google.com/p/gogoprotobuf/protoc-gen-gogo/descriptor"
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	"github.com/gogo/protobuf/protoc-gen-gogo/generator"
+	jgorm "github.com/jinzhu/gorm"
+	"github.com/jinzhu/inflection"
 	"github.com/micro-grpc/protoc-gen-sqlx/pb/sql"
 	"github.com/sirupsen/logrus"
 	"strings"
-	jgorm "github.com/jinzhu/gorm"
-	"github.com/jinzhu/inflection"
 )
 
 var wellKnownTypes = map[string]string{
@@ -65,6 +67,8 @@ func (p *SqlxPlugin) Init(g *generator.Generator) {
 func (p *SqlxPlugin) Generate(file *generator.FileDescriptor) {
 	p.resetImports()
 
+
+
 	for _, msg := range file.Messages() {
 		// We don't want to bother with the MapEntry stuff
 		if msg.DescriptorProto.GetOptions().GetMapEntry() {
@@ -77,11 +81,37 @@ func (p *SqlxPlugin) Generate(file *generator.FileDescriptor) {
 		}
 		if opts := getMessageOptions(msg); opts != nil && opts.Orm {
 			convertibleTypes[unlintedTypeName] = struct{}{}
+			logrus.Warnln(unlintedTypeName)
 		}
 		if opts := getMessageOptions(msg); opts != nil && opts.Gorm {
 			isGormTypes[unlintedTypeName] = struct{}{}
 		}
 	}
+
+	//отключил пока ненадо
+	for _, msg := range file.Messages() {
+		unlintedTypeName := generator.CamelCaseSlice(msg.TypeName())
+		if _, exists := convertibleTypes[unlintedTypeName]; exists {
+			//logrus.Errorln("orm: TRUE")
+			p.isSqlx = true
+		}
+	}
+
+	if p.isSqlx {
+		p.P()
+		p.P(`////////////////////////// GLOBAL vars :))))))`)
+		p.P(`var preOne = "SELECT to_jsonb(f0) AS data FROM (%s) AS f0"`)
+		p.P(`var preMulti = "SELECT COALESCE(jsonb_agg(f0), '[]'::jsonb) AS data FROM (%s) AS f0"`)
+		p.P(`var preRows = "SELECT to_jsonb(f0) AS data FROM (%s) AS f0"`)
+		p.P()
+		p.P(`type Result struct {`)
+		p.P(`Total int64`)
+		p.P(`}`)
+		p.P()
+		//p.generateDefaultHandlers(file)
+		p.P()
+	}
+
 	for _, msg := range file.Messages() {
 		sqlDriver := "sqlx.DB"
 		// We don't want to bother with the MapEntry stuff
@@ -125,6 +155,9 @@ func (p *SqlxPlugin) Generate(file *generator.FileDescriptor) {
 	}
 	p.P()
 	p.P(`////////////////////////// CURDL for objects`)
+	if p.isSqlx {
+		p.generateGlobalApplyFunction()
+	}
 	//p.generateDefaultHandlers(file)
 	p.P()
 
@@ -144,8 +177,20 @@ func (p *SqlxPlugin) generateMessages(message *generator.Descriptor) {
 			vv, err := proto.GetExtension(field.Options, gogoproto.E_Customname)
 			if err == nil {
 				//ext := vv.(*string)
-				logrus.Warningln("custom name for:", fieldName, vv)
-				//v, e := vv.(*google_protobuf.ExtensionDescriptor)
+				//res := vv.(*descriptor.FieldDescriptorProto)
+				//res := field.GetOptions()
+				res := fmt.Sprintf("%+v", *vv.(*string))
+				ormFieldName = res
+				logrus.Warningln("custom name for:", fieldName, "to:", res)
+				//ormFieldName = fieldName
+				//v, _ := vv.(*google_protobuf.ExtensionDescriptor)
+				//res := vv.(*generator.ExtensionDescriptor)
+				//v := vv.(*descriptor.DescriptorProto)
+				//if len(res.GetCustomname()) > 0 {
+
+					//logrus.Warnln(field.GetOptions())
+				//logrus.Warnln(res)
+				//}
 				//if ok {
 				//	logrus.Warningln("customname:", v, "origin:", fieldName)
 				//}
@@ -226,12 +271,39 @@ func (p *SqlxPlugin) generateCovertJSONBFunction(message *generator.Descriptor) 
 	p.P(`}`)
 }
 
+func (p *SqlxPlugin) generateGlobalApplyFunction()  {
+	p.P(`func applyField(fields []string) string {
+	field := ""
+	for _, v := range fields {
+		if len(field) == 0 {
+			field = v
+		} else {
+			field = fmt.Sprintf("%s, %s", field, v)
+		}
+	}
+	return field
+}`)
+	p.P()
+	p.P(`func applyFiltering(filtering []*Filtering) (string, []interface{}) {
+	filter := ""
+	var filterValue []interface{}
+	for key, val := range filtering {
+		if len(filter) > 0 {
+			filter = fmt.Sprintf("%s AND %s%s", filter, val.Name, lib.FilteringMode(val.Mode.String(), key+1))
+		} else {
+			filter = fmt.Sprintf(" %s%s", val.Name, lib.FilteringMode(val.Mode.String(), key+1))
+		}
+		if val.Mode.String() != "IS_NULL" && val.Mode.String() != "NOT_NULL" {
+			filterValue = append(filterValue, val.Value)
+		}
+	}
+	return filter, filterValue
+}`)
+	p.P()
+}
+
 func (p *SqlxPlugin) generateMBboxStructure(message *generator.Descriptor, sqlDriver string) {
 	typeName := p.TypeName(message)
-
-	p.P(`var preOne = "SELECT to_jsonb(f0) AS data FROM (%s) AS f0"`)
-	p.P(`var preMulti = "SELECT COALESCE(jsonb_agg(f0), '[]'::jsonb) AS data FROM (%s) AS f0"`)
-	p.P(`var preRows = "SELECT to_jsonb(f0) AS data FROM (%s) AS f0"`)
 
 	p.P(`type Query`, typeName, ` struct {
 	Verbose     int
@@ -253,11 +325,6 @@ func (p *SqlxPlugin) generateMBboxStructure(message *generator.Descriptor, sqlDr
 	current     int64
 	total       int64
 }`)
-	p.P()
-
-	p.P(`type Result struct {`)
-	p.P(`Total int64`)
-	p.P(`}`)
 	p.P()
 
 	p.P(`// NewQuery`, typeName, ` - initialize Query`, typeName)
@@ -287,35 +354,6 @@ func (p *SqlxPlugin) generateMBboxStructure(message *generator.Descriptor, sqlDr
 	p.P(`func (p *Query`, typeName, `) Close() error {`)
 	p.P(`return p.DB.Close()`)
 	p.P(`}`)
-	p.P()
-
-	p.P(`func applyField(fields []string) string {
-	field := ""
-	for _, v := range fields {
-		if len(field) == 0 {
-			field = v
-		} else {
-			field = fmt.Sprintf("%s, %s", field, v)
-		}
-	}
-	return field
-}`)
-	p.P()
-	p.P(`func applyFiltering(filtering []*Filtering) (string, []interface{}) {
-	filter := ""
-	var filterValue []interface{}
-	for key, val := range filtering {
-		if len(filter) > 0 {
-			filter = fmt.Sprintf("%s AND %s%s", filter, val.Name, lib.FilteringMode(val.Mode.String(), key+1))
-		} else {
-			filter = fmt.Sprintf(" %s%s", val.Name, lib.FilteringMode(val.Mode.String(), key+1))
-		}
-		if val.Mode.String() != "IS_NULL" && val.Mode.String() != "NOT_NULL" {
-			filterValue = append(filterValue, val.Value)
-		}
-	}
-	return filter, filterValue
-}`)
 	p.P()
 }
 

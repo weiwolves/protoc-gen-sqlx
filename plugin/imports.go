@@ -1,7 +1,6 @@
 package plugin
 
 import (
-	"sort"
 	"strings"
 
 	"github.com/gogo/protobuf/protoc-gen-gogo/generator"
@@ -44,8 +43,8 @@ func (p *SqlxPlugin) resetImports() {
 
 // GenerateImports writes out required imports for the generated files
 func (p *SqlxPlugin) GenerateImports(file *generator.FileDescriptor) {
-	var stdImports []string
-	githubImports := map[string]string{}
+	//var stdImports []string
+	//githubImports := map[string]string{}
 	//if p.gormPkgName != "" {
 	//	stdImports = append(stdImports, "context", "errors")
 	//	githubImports[p.gormPkgName] = "github.com/jinzhu/gorm"
@@ -60,16 +59,16 @@ func (p *SqlxPlugin) GenerateImports(file *generator.FileDescriptor) {
 	//	githubImports["ptypes"] = "github.com/golang/protobuf/ptypes"
 	//}
 
-
-	p.PrintImport("log", "github.com/sirupsen/logrus")
-	p.PrintImport("", "github.com/micro-grpc/mbox/lib")
+	isLib := false
 
 	if p.isJSONB {
 		p.PrintImport("", "encoding/json")
 		p.PrintImport("", "database/sql/driver")
+		isLib =true
 	}
 	if p.isGORM {
 		p.PrintImport("", "github.com/jinzhu/gorm")
+		isLib =true
 		//if p.driver == "postgres" {
 		//	githubImports["_"] = "github.com/jinzhu/gorm/dialects/postgres"
 		//}
@@ -77,6 +76,7 @@ func (p *SqlxPlugin) GenerateImports(file *generator.FileDescriptor) {
 	if p.isSqlx {
 		p.PrintImport("", "github.com/jmoiron/sqlx")
 		//p.PrintImport("", "github.com/jmoiron/sqlx/reflectx")
+		isLib =true
 	}
 	//if p.driver == "postgres" {
 	//	githubImports["sql.postgres"] = "_ \"github.com/lib/pq\""
@@ -85,19 +85,30 @@ func (p *SqlxPlugin) GenerateImports(file *generator.FileDescriptor) {
 	//if p.usingAuth {
 	//	githubImports["auth"] = "github.com/infobloxopen/atlas-app-toolkit/mw/auth"
 	//}
+	if isLib {
+		p.PrintImport("log", "github.com/sirupsen/logrus")
+		p.PrintImport("", "github.com/micro-grpc/mbox/lib")
+	}
 
-	sort.Strings(stdImports)
-	for _, dep := range stdImports {
-		p.PrintImport(dep, dep)
-	}
+	//sort.Strings(stdImports)
+	//for _, dep := range stdImports {
+	//	p.PrintImport(dep.(*p.), dep)
+	//}
+	//p.P()
+	//var keys []string
+	//for k := range githubImports {
+	//	keys = append(keys, k)
+	//}
+	//sort.Strings(keys)
+	//for _, key := range keys {
+	//	p.PrintImport(key, githubImports[key])
+	//}
 	p.P()
-	var keys []string
-	for k := range githubImports {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-	for _, key := range keys {
-		p.PrintImport(key, githubImports[key])
-	}
-	p.P()
+
+	//if isLib {
+	//	p.P(`var preOne = "SELECT to_jsonb(f0) AS data FROM (%s) AS f0"`)
+	//	p.P(`var preMulti = "SELECT COALESCE(jsonb_agg(f0), '[]'::jsonb) AS data FROM (%s) AS f0"`)
+	//	p.P(`var preRows = "SELECT to_jsonb(f0) AS data FROM (%s) AS f0"`)
+	//	p.P()
+	//}
 }

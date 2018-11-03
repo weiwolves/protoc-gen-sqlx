@@ -39,6 +39,7 @@ message SqlxFieldOptions {
     bool drop = 5;
     bool pk = 6;
     string fk = 7;
+    string customname = 8;
 
 }
 
