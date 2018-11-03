@@ -13,9 +13,6 @@ build:
 	@protoc -I. -I$(SRCPATH) \
 		--gogo_out="Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor:${SRCPATH}" \
 		pb/**/*.proto
-	@#protoc  -I. -I$(SRCPATH) \
-		--gogo_out="Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor:${SRCPATH}" \
-		github.com/gogo/protobuf/protoc-gen-gogo/*.proto
 
 #	protoc -I. -I$(SRCPATH) -I./vendor \
 #.PHONY: types
