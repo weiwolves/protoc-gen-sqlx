@@ -87,7 +87,7 @@ func (p *SqlxPlugin) GenerateImports(file *generator.FileDescriptor) {
 	//}
 	if isLib {
 		p.PrintImport("log", "github.com/sirupsen/logrus")
-		p.PrintImport("", "github.com/micro-grpc/mbox/lib")
+		p.PrintImport("", "github.com/weiwolves/protoc-gen-sqlx/lib")
 	}
 
 	//sort.Strings(stdImports)

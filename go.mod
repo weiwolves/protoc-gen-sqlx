@@ -8,7 +8,6 @@ require (
 	github.com/jinzhu/gorm v1.9.12
 	github.com/jinzhu/inflection v1.0.0
 	github.com/jmoiron/sqlx v1.2.0
-	github.com/micro-grpc/mbox v0.5.0
 	github.com/mwitkow/go-proto-validators v0.3.0
 	github.com/sirupsen/logrus v1.6.0
 	golang.org/x/net v0.0.0-20200520182314-0ba52f642ac2

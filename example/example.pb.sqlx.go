@@ -7,7 +7,7 @@ import "encoding/json"
 import "database/sql/driver"
 import "github.com/jmoiron/sqlx"
 import log "github.com/sirupsen/logrus"
-import "github.com/micro-grpc/mbox/lib"
+import "github.com/weiwolves/proto-gen-sqlx/lib"
 
 import fmt "fmt"
 import math "math"
