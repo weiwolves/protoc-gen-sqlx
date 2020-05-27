@@ -2,17 +2,20 @@ package plugin
 
 import (
 	"fmt"
+
 	"github.com/gogo/protobuf/gogoproto"
+
 	//google_protobuf "google/protobuf"
 	//google_protobuf "code.google.com/p/gogoprotobuf/protoc-gen-gogo/descriptor"
+	"strings"
+
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	"github.com/gogo/protobuf/protoc-gen-gogo/generator"
 	jgorm "github.com/jinzhu/gorm"
 	"github.com/jinzhu/inflection"
-	"github.com/micro-grpc/protoc-gen-sqlx/pb/sql"
 	"github.com/sirupsen/logrus"
-	"strings"
+	"github.com/weiwolves/protoc-gen-sqlx/pb/sql"
 )
 
 var wellKnownTypes = map[string]string{
@@ -45,11 +48,10 @@ type SqlxPlugin struct {
 	usingTime bool
 	usingAuth bool
 	usingGRPC bool
-	isGORM bool
-	isSqlx bool
-	isJSONB bool
-	driver string
-
+	isGORM    bool
+	isSqlx    bool
+	isJSONB   bool
+	driver    string
 }
 
 // Name identifies the plugin
@@ -66,8 +68,6 @@ func (p *SqlxPlugin) Init(g *generator.Generator) {
 
 func (p *SqlxPlugin) Generate(file *generator.FileDescriptor) {
 	p.resetImports()
-
-
 
 	for _, msg := range file.Messages() {
 		// We don't want to bother with the MapEntry stuff
@@ -123,7 +123,7 @@ func (p *SqlxPlugin) Generate(file *generator.FileDescriptor) {
 			continue
 		}
 		if _, exists := isJSONBTypes[unlintedTypeName]; exists {
-			p.isJSONB =true
+			p.isJSONB = true
 		}
 		if _, exists := isGormTypes[unlintedTypeName]; exists {
 			sqlDriver = "gorm.DB"
@@ -188,7 +188,7 @@ func (p *SqlxPlugin) generateMessages(message *generator.Descriptor) {
 				//v := vv.(*descriptor.DescriptorProto)
 				//if len(res.GetCustomname()) > 0 {
 
-					//logrus.Warnln(field.GetOptions())
+				//logrus.Warnln(field.GetOptions())
 				//logrus.Warnln(res)
 				//}
 				//if ok {
@@ -271,7 +271,7 @@ func (p *SqlxPlugin) generateCovertJSONBFunction(message *generator.Descriptor) 
 	p.P(`}`)
 }
 
-func (p *SqlxPlugin) generateGlobalApplyFunction()  {
+func (p *SqlxPlugin) generateGlobalApplyFunction() {
 	p.P(`func applyField(fields []string) string {
 	field := ""
 	for _, v := range fields {
@@ -362,7 +362,7 @@ func (p *SqlxPlugin) generateMBboxMetods(message *generator.Descriptor) {
 	request := "Request"
 
 	if opts := getMessageOptions(message); opts != nil && len(opts.GetRequest()) > 0 {
-	request = opts.GetRequest()
+		request = opts.GetRequest()
 	}
 
 	p.P(`// BuildOneQuery - return one row`)
@@ -502,9 +502,9 @@ func (p *SqlxPlugin) generateMBboxFields(message *generator.Descriptor) {
 		rederField := ormField
 		if ormField != pbField {
 			rederField = fmt.Sprintf("%s AS %s", ormField, pbField)
-			fieldMap = append(fieldMap, fmt.Sprintf("set[\"%s\"] = \"%s AS %s\"",  ormField, ormField, pbField))
+			fieldMap = append(fieldMap, fmt.Sprintf("set[\"%s\"] = \"%s AS %s\"", ormField, ormField, pbField))
 		} else {
-			fieldMap = append(fieldMap, fmt.Sprintf("set[\"%s\"] = \"%s\"",  ormField, ormField))
+			fieldMap = append(fieldMap, fmt.Sprintf("set[\"%s\"] = \"%s\"", ormField, ormField))
 		}
 		if len(fields) > 0 {
 			fields = fmt.Sprintf("%s, %s", fields, rederField)
@@ -634,13 +634,13 @@ func (p *SqlxPlugin) generateFieldConversion(message *generator.Descriptor, fiel
 		} else {
 			p.P(`// Repeated type `, fieldType, ` is not an ORMable message type`)
 		}
-	//} else if *(field.Type) == typeEnum { // Singular Enum, which is an int32 ---
-	//	if toORM {
-	//		p.P(`to.`, fieldName, ` = int32(from.`, fieldName, `)`)
-	//	} else {
-	//		p.P(`to.`, fieldName, ` = `, fieldType, `(from.`, fieldName, `)`)
-	//	}
-	//} else if *(field.Type) == typeMessage { // Singular Object -------------
+		//} else if *(field.Type) == typeEnum { // Singular Enum, which is an int32 ---
+		//	if toORM {
+		//		p.P(`to.`, fieldName, ` = int32(from.`, fieldName, `)`)
+		//	} else {
+		//		p.P(`to.`, fieldName, ` = `, fieldType, `(from.`, fieldName, `)`)
+		//	}
+		//} else if *(field.Type) == typeMessage { // Singular Object -------------
 		////Check for WKTs
 		//parts := strings.Split(fieldType, ".")
 		//coreType := parts[len(parts)-1]

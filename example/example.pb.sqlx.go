@@ -13,7 +13,7 @@ import fmt "fmt"
 import math "math"
 import _ "github.com/gogo/protobuf/gogoproto"
 import _ "github.com/golang/protobuf/ptypes/timestamp"
-import _ "github.com/micro-grpc/protoc-gen-sqlx/pb/sql"
+import _ "github.com/weiwolves/protoc-gen-sqlx/pb/sql"
 import _ "github.com/mwitkow/go-proto-validators"
 
 import time "time"

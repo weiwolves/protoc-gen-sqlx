@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package sql;
-option go_package = "github.com/micro-grpc/protoc-gen-sqlx/pb/sql;sql";
+option go_package = "github.com/weiwolves/protoc-gen-sqlx/pb/sql;sql";
 
 import "google/protobuf/descriptor.proto";
 

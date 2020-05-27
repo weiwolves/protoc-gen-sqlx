@@ -8,10 +8,10 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 //import "google/protobuf/wrappers.proto";
 //import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
-import "github.com/micro-grpc/protoc-gen-sqlx/pb/sql/sql.proto";
+import "github.com/weiwolves/protoc-gen-sqlx/pb/sql/sql.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 
-//option go_package = "github.com/micro-grpc/protoc-gen-sqlx/example;example";
+//option go_package = "github.com/weiwolves/protoc-gen-sqlx/example;example";
 
 option (gogoproto.gostring_all) = true;
 

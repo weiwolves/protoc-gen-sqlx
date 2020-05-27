@@ -14,7 +14,7 @@ import proto "github.com/golang/protobuf/proto"
 import math "math"
 import _ "github.com/gogo/protobuf/gogoproto"
 import _ "github.com/gogo/protobuf/types"
-import _ "github.com/micro-grpc/protoc-gen-sqlx/pb/sql"
+import _ "github.com/weiwolves/protoc-gen-sqlx/pb/sql"
 import _ "github.com/mwitkow/go-proto-validators"
 
 // Reference imports to suppress errors if they are not otherwise used.

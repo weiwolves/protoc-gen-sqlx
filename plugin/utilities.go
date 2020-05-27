@@ -3,7 +3,7 @@ package plugin
 import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/generator"
-	"github.com/micro-grpc/protoc-gen-sqlx/pb/sql"
+	"github.com/weiwolves/protoc-gen-sqlx/pb/sql"
 )
 
 // retrieves the SqlxMessageOptions from a message
