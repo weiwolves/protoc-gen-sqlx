@@ -151,7 +151,7 @@ func (p *SqlxPlugin) Generate(file *generator.FileDescriptor) {
 		}
 
 		p.generateMBboxMetods(msg)
-		p.generateConvertFunctions(msg)
+		// p.generateConvertFunctions(msg)
 	}
 	p.P()
 	p.P(`////////////////////////// CURDL for objects`)
@@ -167,7 +167,7 @@ func (p *SqlxPlugin) Generate(file *generator.FileDescriptor) {
 func (p *SqlxPlugin) generateMessages(message *generator.Descriptor) {
 	typeName := p.TypeName(message)
 	logrus.Println("typeName:", typeName)
-	p.generateMessageHead(message)
+	// p.generateMessageHead(message)
 	for _, field := range message.Field {
 		fieldName := generator.CamelCase(field.GetName())
 		ormFieldName := fieldName
