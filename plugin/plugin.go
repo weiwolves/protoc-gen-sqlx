@@ -132,7 +132,7 @@ func (p *SqlxPlugin) Generate(file *generator.FileDescriptor) {
 		p.isSqlx = true
 
 		logrus.Println("Generate ORM structure")
-		p.generateMessages(msg)
+		// p.generateMessages(msg)
 
 		if _, exists := isGormTypes[unlintedTypeName]; exists {
 			logrus.Println("Generate GORM TableName")
@@ -167,7 +167,7 @@ func (p *SqlxPlugin) Generate(file *generator.FileDescriptor) {
 func (p *SqlxPlugin) generateMessages(message *generator.Descriptor) {
 	typeName := p.TypeName(message)
 	logrus.Println("typeName:", typeName)
-	// p.generateMessageHead(message)
+	p.generateMessageHead(message)
 	for _, field := range message.Field {
 		fieldName := generator.CamelCase(field.GetName())
 		ormFieldName := fieldName
