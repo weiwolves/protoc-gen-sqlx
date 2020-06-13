@@ -129,3 +129,41 @@ func RandNumberSeq(n int) string {
   }
   return string(b)
 }
+
+////////////////////////// GLOBAL vars :))))))
+var PreOne = "SELECT to_jsonb(f0) AS data FROM (%s) AS f0"
+var PreMulti = "SELECT COALESCE(jsonb_agg(f0), '[]'::jsonb) AS data FROM (%s) AS f0"
+var PreRows = "SELECT to_jsonb(f0) AS data FROM (%s) AS f0"
+
+type Result struct {
+	Total int64
+}
+
+////////////////////////// CURDL for objects
+func ApplyField(fields []string) string {
+	field := ""
+	for _, v := range fields {
+		if len(field) == 0 {
+			field = v
+		} else {
+			field = fmt.Sprintf("%s, %s", field, v)
+		}
+	}
+	return field
+}
+
+func ApplyFiltering(filtering []*Filtering) (string, []interface{}) {
+	filter := ""
+	var filterValue []interface{}
+	for key, val := range filtering {
+		if len(filter) > 0 {
+			filter = fmt.Sprintf("%s AND %s%s", filter, val.Name, lib.FilteringMode(val.Mode.String(), key+1))
+		} else {
+			filter = fmt.Sprintf(" %s%s", val.Name, lib.FilteringMode(val.Mode.String(), key+1))
+		}
+		if val.Mode.String() != "IS_NULL" && val.Mode.String() != "NOT_NULL" {
+			filterValue = append(filterValue, val.Value)
+		}
+	}
+	return filter, filterValue
+}

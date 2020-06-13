@@ -10,6 +10,5 @@ require (
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/mwitkow/go-proto-validators v0.3.0
 	github.com/sirupsen/logrus v1.6.0
-	golang.org/x/net v0.0.0-20200528225125-3c3fba18258b
 	google.golang.org/grpc v1.29.1
 )

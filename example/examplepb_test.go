@@ -3,19 +3,21 @@
 
 package example
 
-import testing "testing"
-import math_rand "math/rand"
-import time "time"
-import github_com_golang_protobuf_proto "github.com/golang/protobuf/proto"
-import github_com_gogo_protobuf_jsonpb "github.com/gogo/protobuf/jsonpb"
-import fmt "fmt"
-import go_parser "go/parser"
-import proto "github.com/golang/protobuf/proto"
-import math "math"
-import _ "github.com/gogo/protobuf/gogoproto"
-import _ "github.com/gogo/protobuf/types"
-import _ "github.com/weiwolves/protoc-gen-sqlx/pb/sql"
-import _ "github.com/mwitkow/go-proto-validators"
+import (
+	fmt "fmt"
+	_ "github.com/gogo/protobuf/gogoproto"
+	github_com_gogo_protobuf_jsonpb "github.com/gogo/protobuf/jsonpb"
+	_ "github.com/gogo/protobuf/types"
+	github_com_golang_protobuf_proto "github.com/golang/protobuf/proto"
+	proto "github.com/golang/protobuf/proto"
+	_ "github.com/mwitkow/go-proto-validators"
+	_ "github.com/weiwolves/protoc-gen-sqlx/pb/sql"
+	go_parser "go/parser"
+	math "math"
+	math_rand "math/rand"
+	testing "testing"
+	time "time"
+)
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal

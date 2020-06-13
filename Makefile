@@ -38,7 +38,7 @@ example: clean default
 	@echo "Generate example"
 	@protoc -I. -I$(SRCPATH) \
 		--gofast_out=${MODIFY},plugins=grpc:. \
-		--sqlx_out=. \
+		--sqlx_out=${MODIFY}:. \
 		--proto_path=${GOPATH}/src/github.com/gogo/protobuf/protobuf \
 		example/*.proto
 #	protoc -I. -I$(SRCPATH) -I./vendor \

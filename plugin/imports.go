@@ -64,11 +64,11 @@ func (p *SqlxPlugin) GenerateImports(file *generator.FileDescriptor) {
 	if p.isJSONB {
 		p.PrintImport("", "encoding/json")
 		p.PrintImport("", "database/sql/driver")
-		isLib =true
+		isLib = true
 	}
 	if p.isGORM {
 		p.PrintImport("", "github.com/jinzhu/gorm")
-		isLib =true
+		isLib = true
 		//if p.driver == "postgres" {
 		//	githubImports["_"] = "github.com/jinzhu/gorm/dialects/postgres"
 		//}
@@ -76,7 +76,7 @@ func (p *SqlxPlugin) GenerateImports(file *generator.FileDescriptor) {
 	if p.isSqlx {
 		p.PrintImport("", "github.com/jmoiron/sqlx")
 		//p.PrintImport("", "github.com/jmoiron/sqlx/reflectx")
-		isLib =true
+		isLib = true
 	}
 	//if p.driver == "postgres" {
 	//	githubImports["sql.postgres"] = "_ \"github.com/lib/pq\""
