@@ -73,10 +73,10 @@ message Example {
 
 service ExampleService {
     option (sql.server).autogen = true;
-    rpc Read (sql.SqlxQuery) returns (sql.Response) {
+    rpc Read (sql.Query) returns (sql.Response) {
         option (sql.method).jsonb = true;
     }
-    rpc List (sql.SqlxQuery) returns (sql.ResponseList);
+    rpc List (sql.Query) returns (sql.ResponseList);
     rpc Create (sql.Mutation) returns (sql.MutationResponse);
     rpc Update (sql.Mutation) returns (sql.Empty);
 }

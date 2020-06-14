@@ -79,7 +79,7 @@ message Sorting {
     repeated SortCriteria sort = 1;
 }
 
-message Filtering {
+message Filter {
     string name = 1;
     enum Mode {
         // EQ in sql =
@@ -122,7 +122,7 @@ message Query {
         int64 last = 5;
     }
     int64 limit = 6;
-    repeated Filtering filter = 7;
+    repeated Filter filter = 7;
     repeated string field = 8;
 }
 

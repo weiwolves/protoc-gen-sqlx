@@ -152,6 +152,7 @@ func (p *SqlxPlugin) Generate(file *generator.FileDescriptor) {
 
 		p.generateMBboxMetods(msg)
 		// p.generateConvertFunctions(msg)
+		p.generateGlobalApplyFunction(msg)
 	}
 	p.P()
 	p.P(`////////////////////////// CURDL for objects`)
@@ -271,36 +272,38 @@ func (p *SqlxPlugin) generateCovertJSONBFunction(message *generator.Descriptor) 
 	p.P(`}`)
 }
 
-// func (p *SqlxPlugin) generateGlobalApplyFunction() {
-// 	p.P(`func ApplyField(fields []string) string {
-// 	field := ""
-// 	for _, v := range fields {
-// 		if len(field) == 0 {
-// 			field = v
-// 		} else {
-// 			field = fmt.Sprintf("%s, %s", field, v)
-// 		}
-// 	}
-// 	return field
-// }`)
-// 	p.P()
-// 	p.P(`func ApplyFiltering(filtering []*Filtering) (string, []interface{}) {
-// 	filter := ""
-// 	var filterValue []interface{}
-// 	for key, val := range filtering {
-// 		if len(filter) > 0 {
-// 			filter = fmt.Sprintf("%s AND %s%s", filter, val.Name, lib.FilteringMode(val.Mode.String(), key+1))
-// 		} else {
-// 			filter = fmt.Sprintf(" %s%s", val.Name, lib.FilteringMode(val.Mode.String(), key+1))
-// 		}
-// 		if val.Mode.String() != "IS_NULL" && val.Mode.String() != "NOT_NULL" {
-// 			filterValue = append(filterValue, val.Value)
-// 		}
-// 	}
-// 	return filter, filterValue
-// }`)
-// 	p.P()
-// }
+func (p *SqlxPlugin) generateGlobalApplyFunction(message *generator.Descriptor) {
+	typeName := p.TypeName(message)
+	p.P(`func (p *Query`, typeName, `) applyField() string {
+	field := ""
+	fields := p.Fields()
+	for _, v := range fields {
+		if len(field) == 0 {
+			field = v
+		} else {
+			field = fmt.Sprintf("%s, %s", field, v)
+		}
+	}
+	return field
+}`)
+	p.P()
+	p.P(`func (p *Query`, typeName, `) applyFilters(filters []*Filter) (string, []interface{}) {
+	filter := ""
+	var filterValue []interface{}
+	for key, val := range filters {
+		if len(filter) > 0 {
+			filter = fmt.Sprintf("%s AND %s%s", filter, val.Name, lib.FilteringMode(val.Mode.String(), key+1))
+		} else {
+			filter = fmt.Sprintf(" %s%s", val.Name, lib.FilteringMode(val.Mode.String(), key+1))
+		}
+		if val.Mode.String() != "IS_NULL" && val.Mode.String() != "NOT_NULL" {
+			filterValue = append(filterValue, val.Value)
+		}
+	}
+	return filter, filterValue
+}`)
+	p.P()
+}
 
 func (p *SqlxPlugin) generateMBboxStructure(message *generator.Descriptor, sqlDriver string) {
 	typeName := p.TypeName(message)
@@ -380,7 +383,7 @@ func (p *SqlxPlugin) generateMBboxMetods(message *generator.Descriptor) {
 	p.P(`func (p *Query`, typeName, `) Count(in *`, request, `) (int64) {
   var result lib.Result
   wh := ""
-  filter, args := lib.ApplyFiltering(in.Filter)
+  filter, args := p.applyFilters(in.Filter)
   if len(filter) > 0 {
     wh = fmt.Sprintf(" WHERE%s", filter)
   }
@@ -398,13 +401,13 @@ func (p *SqlxPlugin) generateMBboxMetods(message *generator.Descriptor) {
 
 	p.P(`func (p *Query`, typeName, `) BuildQuery(in *`, request, `, f string, reserved bool, one bool) (string, []interface{}) {
 	wh := ""
-  filter, filterValue := lib.ApplyFiltering(in.Filter)
+  filter, filterValue := p.applyFilters(in.Filter)
   field := p.field
 
   if len(f) > 0 {
     field = f
   } else if len(in.Field) > 0 {
-    field = lib.ApplyField(in.Field)
+    field = p.applyField(in.Field)
   }
 	if len(filter) > 0 {
 		wh = fmt.Sprintf(" WHERE%s", filter)
