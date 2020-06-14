@@ -1,4 +1,3 @@
-GOPATH ?= $(HOME)/go
 SRCPATH := $(patsubst %/,%,$(GOPATH))/src
 MODIFY=Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types
 
@@ -12,7 +11,8 @@ get:
 build:
 	@protoc -I. -I$(SRCPATH) \
 		--gogo_out="Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor:${SRCPATH}" \
-		pb/**/*.proto
+		pb/sql/*.proto
+	@mv $(GOPATH)/src/github.com/weiwolves/protoc-gen-sqlx/pb/sql/*.pb.go ./pb/sql/
 
 #	protoc -I. -I$(SRCPATH) -I./vendor \
 #.PHONY: types
