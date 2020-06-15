@@ -2,19 +2,19 @@ package plugin
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/gogo/protobuf/gogoproto"
+	"github.com/sirupsen/logrus"
 
 	//google_protobuf "google/protobuf"
 	//google_protobuf "code.google.com/p/gogoprotobuf/protoc-gen-gogo/descriptor"
-	"strings"
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	"github.com/gogo/protobuf/protoc-gen-gogo/generator"
 	jgorm "github.com/jinzhu/gorm"
 	"github.com/jinzhu/inflection"
-	"github.com/sirupsen/logrus"
 	"github.com/weiwolves/protoc-gen-sqlx/pb/sql"
 )
 
@@ -287,7 +287,7 @@ func (p *SqlxPlugin) generateGlobalApplyFunction(message *generator.Descriptor) 
 	return field
 }`)
 	p.P()
-	p.P(`func (p *Query`, typeName, `) applyFilters(filters []*Filter) (string, []interface{}) {
+	p.P(`func (p *Query`, typeName, `) applyFilters(filters []*SqlFilter) (string, []interface{}) {
 	filter := ""
 	var filterValue []interface{}
 	for key, val := range filters {
@@ -362,7 +362,7 @@ func (p *SqlxPlugin) generateMBboxStructure(message *generator.Descriptor, sqlDr
 
 func (p *SqlxPlugin) generateMBboxMetods(message *generator.Descriptor) {
 	typeName := p.TypeName(message)
-	request := "Request"
+	request := "pbsqlx.SqlQuery"
 
 	if opts := getMessageOptions(message); opts != nil && len(opts.GetRequest()) > 0 {
 		request = opts.GetRequest()

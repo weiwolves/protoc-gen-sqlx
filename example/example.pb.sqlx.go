@@ -12,9 +12,9 @@ import (
 	_ "github.com/gogo/protobuf/types"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mwitkow/go-proto-validators"
-	log "github.com/sirupsen/logrus"
 	"github.com/weiwolves/protoc-gen-sqlx/lib"
 	_ "github.com/weiwolves/protoc-gen-sqlx/pb/sql"
+	pbsqlx "github.com/weiwolves/protoc-gen-sqlx/pb/sql"
 	math "math"
 )
 
@@ -110,19 +110,19 @@ func (p *QueryExampleItem) Value() (driver.Value, error) {
 }
 
 // BuildOneQuery - return one row
-func (p *QueryExampleItem) BuildOneQuery(in *Query, field string) (string, []interface{}) {
+func (p *QueryExampleItem) BuildOneQuery(in *pbsqlx.SqlQuery, field string) (string, []interface{}) {
 	return p.BuildQuery(in, field, false, true)
 }
 
 // BuildMultiQuery - return rows
-func (p *QueryExampleItem) BuildMultiQuery(in *Query, field string) (string, []interface{}) {
+func (p *QueryExampleItem) BuildMultiQuery(in *pbsqlx.SqlQuery, field string) (string, []interface{}) {
 	return p.BuildQuery(in, field, false, false)
 }
 
-func (p *QueryExampleItem) Count(in *Query) int64 {
+func (p *QueryExampleItem) Count(in *pbsqlx.SqlQuery) int64 {
 	var result lib.Result
 	wh := ""
-	filter, args := lib.ApplyFiltering(in.Filter)
+	filter, args := p.applyFilters(in.Filter)
 	if len(filter) > 0 {
 		wh = fmt.Sprintf(" WHERE%s", filter)
 	}
@@ -137,15 +137,15 @@ func (p *QueryExampleItem) Count(in *Query) int64 {
 	return result.Total
 }
 
-func (p *QueryExampleItem) BuildQuery(in *Query, f string, reserved bool, one bool) (string, []interface{}) {
+func (p *QueryExampleItem) BuildQuery(in *pbsqlx.SqlQuery, f string, reserved bool, one bool) (string, []interface{}) {
 	wh := ""
-	filter, filterValue := lib.ApplyFiltering(in.Filter)
+	filter, filterValue := p.applyFilters(in.Filter)
 	field := p.field
 
 	if len(f) > 0 {
 		field = f
 	} else if len(in.Field) > 0 {
-		field = lib.ApplyField(in.Field)
+		field = p.applyField(in.Field)
 	}
 	if len(filter) > 0 {
 		wh = fmt.Sprintf(" WHERE%s", filter)
@@ -173,6 +173,35 @@ func (p *QueryExampleItem) BuildQuery(in *Query, f string, reserved bool, one bo
 		return fmt.Sprintf("%s ORDER BY %s %s LIMIT 1", str, p.sort, order), filterValue
 	}
 	return fmt.Sprintf("%s ORDER BY %s %s LIMIT %d OFFSET %d", str, p.sort, order, limit, offset), filterValue
+}
+
+func (p *QueryExampleItem) applyField() string {
+	field := ""
+	fields := p.Fields()
+	for _, v := range fields {
+		if len(field) == 0 {
+			field = v
+		} else {
+			field = fmt.Sprintf("%s, %s", field, v)
+		}
+	}
+	return field
+}
+
+func (p *QueryExampleItem) applyFilters(filters []*SqlFilter) (string, []interface{}) {
+	filter := ""
+	var filterValue []interface{}
+	for key, val := range filters {
+		if len(filter) > 0 {
+			filter = fmt.Sprintf("%s AND %s%s", filter, val.Name, lib.FilteringMode(val.Mode.String(), key+1))
+		} else {
+			filter = fmt.Sprintf(" %s%s", val.Name, lib.FilteringMode(val.Mode.String(), key+1))
+		}
+		if val.Mode.String() != "IS_NULL" && val.Mode.String() != "NOT_NULL" {
+			filterValue = append(filterValue, val.Value)
+		}
+	}
+	return filter, filterValue
 }
 
 type QueryExample struct {
@@ -264,19 +293,19 @@ func (p *QueryExample) Value() (driver.Value, error) {
 }
 
 // BuildOneQuery - return one row
-func (p *QueryExample) BuildOneQuery(in *Query, field string) (string, []interface{}) {
+func (p *QueryExample) BuildOneQuery(in *pbsqlx.SqlQuery, field string) (string, []interface{}) {
 	return p.BuildQuery(in, field, false, true)
 }
 
 // BuildMultiQuery - return rows
-func (p *QueryExample) BuildMultiQuery(in *Query, field string) (string, []interface{}) {
+func (p *QueryExample) BuildMultiQuery(in *pbsqlx.SqlQuery, field string) (string, []interface{}) {
 	return p.BuildQuery(in, field, false, false)
 }
 
-func (p *QueryExample) Count(in *Query) int64 {
+func (p *QueryExample) Count(in *pbsqlx.SqlQuery) int64 {
 	var result lib.Result
 	wh := ""
-	filter, args := lib.ApplyFiltering(in.Filter)
+	filter, args := p.applyFilters(in.Filter)
 	if len(filter) > 0 {
 		wh = fmt.Sprintf(" WHERE%s", filter)
 	}
@@ -291,15 +320,15 @@ func (p *QueryExample) Count(in *Query) int64 {
 	return result.Total
 }
 
-func (p *QueryExample) BuildQuery(in *Query, f string, reserved bool, one bool) (string, []interface{}) {
+func (p *QueryExample) BuildQuery(in *pbsqlx.SqlQuery, f string, reserved bool, one bool) (string, []interface{}) {
 	wh := ""
-	filter, filterValue := lib.ApplyFiltering(in.Filter)
+	filter, filterValue := p.applyFilters(in.Filter)
 	field := p.field
 
 	if len(f) > 0 {
 		field = f
 	} else if len(in.Field) > 0 {
-		field = lib.ApplyField(in.Field)
+		field = p.applyField(in.Field)
 	}
 	if len(filter) > 0 {
 		wh = fmt.Sprintf(" WHERE%s", filter)
@@ -327,6 +356,35 @@ func (p *QueryExample) BuildQuery(in *Query, f string, reserved bool, one bool) 
 		return fmt.Sprintf("%s ORDER BY %s %s LIMIT 1", str, p.sort, order), filterValue
 	}
 	return fmt.Sprintf("%s ORDER BY %s %s LIMIT %d OFFSET %d", str, p.sort, order, limit, offset), filterValue
+}
+
+func (p *QueryExample) applyField() string {
+	field := ""
+	fields := p.Fields()
+	for _, v := range fields {
+		if len(field) == 0 {
+			field = v
+		} else {
+			field = fmt.Sprintf("%s, %s", field, v)
+		}
+	}
+	return field
+}
+
+func (p *QueryExample) applyFilters(filters []*SqlFilter) (string, []interface{}) {
+	filter := ""
+	var filterValue []interface{}
+	for key, val := range filters {
+		if len(filter) > 0 {
+			filter = fmt.Sprintf("%s AND %s%s", filter, val.Name, lib.FilteringMode(val.Mode.String(), key+1))
+		} else {
+			filter = fmt.Sprintf(" %s%s", val.Name, lib.FilteringMode(val.Mode.String(), key+1))
+		}
+		if val.Mode.String() != "IS_NULL" && val.Mode.String() != "NOT_NULL" {
+			filterValue = append(filterValue, val.Value)
+		}
+	}
+	return filter, filterValue
 }
 
 ////////////////////////// CURDL for objects

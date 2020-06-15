@@ -86,8 +86,9 @@ func (p *SqlxPlugin) GenerateImports(file *generator.FileDescriptor) {
 	//	githubImports["auth"] = "github.com/infobloxopen/atlas-app-toolkit/mw/auth"
 	//}
 	if isLib {
-		p.PrintImport("log", "github.com/sirupsen/logrus")
+		//p.PrintImport("log", "github.com/sirupsen/logrus")
 		p.PrintImport("", "github.com/weiwolves/protoc-gen-sqlx/lib")
+		p.PrintImport("pbsqlx", "github.com/weiwolves/protoc-gen-sqlx/pb/sql")
 	}
 
 	//sort.Strings(stdImports)

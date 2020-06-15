@@ -8,8 +8,8 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 //import "google/protobuf/wrappers.proto";
 //import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
-import "github.com/weiwolves/protoc-gen-sqlx/pb/sql/sql.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
+import "pb/sql/sql.proto";
 
 //option go_package = "github.com/weiwolves/protoc-gen-sqlx/example;example";
 
@@ -38,10 +38,34 @@ option (gogoproto.goproto_enum_prefix_all) = false;
 
 message Empty{}
 
+message Response {
+    bytes data = 1;
+}
+
+message ResponseList {
+    repeated bytes data = 1;
+    int64 total = 2;
+    sql.SqlPageInfo page_info = 3;
+}
+
+message MutationField {
+    string name = 1;
+    string value = 2;
+}
+
+message MutationResponse {
+    int64 id = 1;
+}
+
+message Mutation {
+    string id = 1;
+    repeated MutationField fields = 8;
+}
+
 message ExampleItem {
     option (sql.opts).jsonb = true;
     option (sql.opts).orm = true;
-    option (sql.opts).request = "Query";
+//    option (sql.opts).request = "Query";
     option (sql.opts).table = "example_items";
     //    option (sql.opts).gorm = true;
     int64 id = 1 [(gogoproto.moretags) = "db:\"id\"", (sql.field).name = "ID", (sql.field).pk = true];
@@ -56,7 +80,7 @@ message ExampleItem {
 message Example {
     option (sql.opts).jsonb = true;
     option (sql.opts).orm = true;
-    option (sql.opts).request = "Query";
+//   option (sql.opts).request = "Query";
     option (sql.opts).table = "examples";
 //    option (sql.opts).gorm = true;
     int64 id = 1 [(gogoproto.moretags) = "db:\"id\"", (sql.field).name = "ID", (sql.field).pk = true];
@@ -73,10 +97,10 @@ message Example {
 
 service ExampleService {
     option (sql.server).autogen = true;
-    rpc Read (sql.Query) returns (sql.Response) {
+    rpc Read (sql.SqlQuery) returns (Response) {
         option (sql.method).jsonb = true;
     }
-    rpc List (sql.Query) returns (sql.ResponseList);
-    rpc Create (sql.Mutation) returns (sql.MutationResponse);
-    rpc Update (sql.Mutation) returns (sql.Empty);
+    rpc List (sql.SqlQuery) returns (ResponseList);
+    rpc Create (Mutation) returns (MutationResponse);
+    rpc Update (Mutation) returns (Empty);
 }
