@@ -538,7 +538,8 @@ func (p *SqlxPlugin) generateMBboxFields(message *generator.Descriptor) {
 		p.P()
 
 		p.P(`func `, typeName, `FieldsContain(item string) bool {`)
-		p.P(`_, ok := p.defFields[item]`)
+		p.P(`flds := `, typeName, `FieldsMap()`)
+		p.P(`_, ok := flds[item]`)
 		p.P(`return ok`)
 		p.P(`}`)
 		p.P()
