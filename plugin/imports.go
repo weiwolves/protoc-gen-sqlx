@@ -15,7 +15,7 @@ var unneededImports = []string{
 	// if needed will be imported with an alias
 	"\t_ \"github.com/infobloxopen/protoc-gen-gorm/types\"\n",
 	"\t_ \"github.com/weiwolves/protoc-gen-sqlx/pb/sql\"\n",
-	//"var _ = proto.Marshal\n",
+	"var _ = proto.Marshal\n",
 }
 
 // CleanImports removes extraneous imports and lines from a proto response
@@ -87,7 +87,7 @@ func (p *SqlxPlugin) GenerateImports(file *generator.FileDescriptor) {
 	//	githubImports["auth"] = "github.com/infobloxopen/atlas-app-toolkit/mw/auth"
 	//}
 	if isLib {
-		//p.PrintImport("log", "github.com/sirupsen/logrus")
+		p.PrintImport("log", "github.com/sirupsen/logrus")
 		p.PrintImport("", "github.com/weiwolves/protoc-gen-sqlx/lib")
 		p.PrintImport("", "github.com/weiwolves/protoc-gen-sqlx/pb/sql")
 	}
