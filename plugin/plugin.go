@@ -287,7 +287,7 @@ func (p *SqlxPlugin) generateGlobalApplyFunction(message *generator.Descriptor) 
 	return field
 }`)
 	p.P()
-	p.P(`func (p *Query`, typeName, `) applyFilters(filters []*SqlFilter) (string, []interface{}) {
+	p.P(`func (p *Query`, typeName, `) applyFilters(filters []*pbsqlx.SqlFilter) (string, []interface{}) {
 	filter := ""
 	var filterValue []interface{}
 	for key, val := range filters {
@@ -553,8 +553,7 @@ func (p *SqlxPlugin) generateConvertFunctions(message *generator.Descriptor) {
 
 	///// To Orm
 	p.P(`// Convert`, typeName, `ToType takes a pb object and returns an orm object`)
-	p.P(`func Convert`, typeName, `ToType (from `,
-		typeName, `) (`, typeName, `Type, error) {`)
+	p.P(`func Convert`, typeName, `ToType (from `, typeName, `) (`, typeName, `Type, error) {`)
 	p.P(`to := `, typeName, `Type{}`)
 	p.P(`var err error`)
 	for _, field := range message.Field {
@@ -582,8 +581,7 @@ func (p *SqlxPlugin) generateConvertFunctions(message *generator.Descriptor) {
 	p.P()
 	///// To Pb
 	p.P(`// Convert`, typeName, `FromType takes an orm object and returns a pb object`)
-	p.P(`func Convert`, typeName, `FromType (from `, typeName, `Type) (`,
-		typeName, `, error) {`)
+	p.P(`func Convert`, typeName, `FromType (from `, typeName, `Type) (`, typeName, `, error) {`)
 	p.P(`to := `, typeName, `{}`)
 	p.P(`var err error`)
 	for _, field := range message.Field {

@@ -19,6 +19,7 @@ import (
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
+var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
@@ -188,7 +189,7 @@ func (p *QueryExampleItem) applyField() string {
 	return field
 }
 
-func (p *QueryExampleItem) applyFilters(filters []*SqlFilter) (string, []interface{}) {
+func (p *QueryExampleItem) applyFilters(filters []*pbsqlx.SqlFilter) (string, []interface{}) {
 	filter := ""
 	var filterValue []interface{}
 	for key, val := range filters {
@@ -371,7 +372,7 @@ func (p *QueryExample) applyField() string {
 	return field
 }
 
-func (p *QueryExample) applyFilters(filters []*SqlFilter) (string, []interface{}) {
+func (p *QueryExample) applyFilters(filters []*pbsqlx.SqlFilter) (string, []interface{}) {
 	filter := ""
 	var filterValue []interface{}
 	for key, val := range filters {

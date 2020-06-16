@@ -14,7 +14,7 @@ var unneededImports = []string{
 	"import _ \"github.com/infobloxopen/protoc-gen-gorm/options\"\n",
 	// if needed will be imported with an alias
 	"import _ \"github.com/infobloxopen/protoc-gen-gorm/types\"\n",
-	"var _ = proto.Marshal\n",
+	//"var _ = proto.Marshal\n",
 }
 
 // CleanImports removes extraneous imports and lines from a proto response
