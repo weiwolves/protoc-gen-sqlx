@@ -10,10 +10,11 @@ import (
 
 // Imports that are added by default but unneeded in GORM code
 var unneededImports = []string{
-	"import proto \"github.com/gogo/protobuf/proto\"\n",
-	"import _ \"github.com/infobloxopen/protoc-gen-gorm/options\"\n",
+	"\tproto \"github.com/gogo/protobuf/proto\"\n",
+	"\t_ \"github.com/infobloxopen/protoc-gen-gorm/options\"\n",
 	// if needed will be imported with an alias
-	"import _ \"github.com/infobloxopen/protoc-gen-gorm/types\"\n",
+	"\t_ \"github.com/infobloxopen/protoc-gen-gorm/types\"\n",
+	"\t_ \"github.com/weiwolves/protoc-gen-sqlx/pb/sql\"\n",
 	//"var _ = proto.Marshal\n",
 }
 
@@ -88,7 +89,7 @@ func (p *SqlxPlugin) GenerateImports(file *generator.FileDescriptor) {
 	if isLib {
 		//p.PrintImport("log", "github.com/sirupsen/logrus")
 		p.PrintImport("", "github.com/weiwolves/protoc-gen-sqlx/lib")
-		p.PrintImport("pbsqlx", "github.com/weiwolves/protoc-gen-sqlx/pb/sql")
+		p.PrintImport("", "github.com/weiwolves/protoc-gen-sqlx/pb/sql")
 	}
 
 	//sort.Strings(stdImports)

@@ -287,7 +287,7 @@ func (p *SqlxPlugin) generateGlobalApplyFunction(message *generator.Descriptor) 
 	return field
 }`)
 	p.P()
-	p.P(`func (p *Query`, typeName, `) applyFilters(filters []*pbsqlx.SqlFilter) (string, []interface{}) {
+	p.P(`func (p *Query`, typeName, `) applyFilters(filters []*sql.SqlFilter) (string, []interface{}) {
 	filter := ""
 	var filterValue []interface{}
 	for key, val := range filters {
@@ -362,7 +362,7 @@ func (p *SqlxPlugin) generateMBboxStructure(message *generator.Descriptor, sqlDr
 
 func (p *SqlxPlugin) generateMBboxMetods(message *generator.Descriptor) {
 	typeName := p.TypeName(message)
-	request := "pbsqlx.SqlQuery"
+	request := "sql.SqlQuery"
 
 	if opts := getMessageOptions(message); opts != nil && len(opts.GetRequest()) > 0 {
 		request = opts.GetRequest()

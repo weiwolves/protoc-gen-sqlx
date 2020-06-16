@@ -8,13 +8,11 @@ import (
 	"encoding/json"
 	fmt "fmt"
 	_ "github.com/gogo/protobuf/gogoproto"
-	proto "github.com/gogo/protobuf/proto"
 	_ "github.com/gogo/protobuf/types"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mwitkow/go-proto-validators"
 	"github.com/weiwolves/protoc-gen-sqlx/lib"
-	_ "github.com/weiwolves/protoc-gen-sqlx/pb/sql"
-	pbsqlx "github.com/weiwolves/protoc-gen-sqlx/pb/sql"
+	"github.com/weiwolves/protoc-gen-sqlx/pb/sql"
 	math "math"
 )
 
@@ -111,16 +109,16 @@ func (p *QueryExampleItem) Value() (driver.Value, error) {
 }
 
 // BuildOneQuery - return one row
-func (p *QueryExampleItem) BuildOneQuery(in *pbsqlx.SqlQuery, field string) (string, []interface{}) {
+func (p *QueryExampleItem) BuildOneQuery(in *sql.SqlQuery, field string) (string, []interface{}) {
 	return p.BuildQuery(in, field, false, true)
 }
 
 // BuildMultiQuery - return rows
-func (p *QueryExampleItem) BuildMultiQuery(in *pbsqlx.SqlQuery, field string) (string, []interface{}) {
+func (p *QueryExampleItem) BuildMultiQuery(in *sql.SqlQuery, field string) (string, []interface{}) {
 	return p.BuildQuery(in, field, false, false)
 }
 
-func (p *QueryExampleItem) Count(in *pbsqlx.SqlQuery) int64 {
+func (p *QueryExampleItem) Count(in *sql.SqlQuery) int64 {
 	var result lib.Result
 	wh := ""
 	filter, args := p.applyFilters(in.Filter)
@@ -138,7 +136,7 @@ func (p *QueryExampleItem) Count(in *pbsqlx.SqlQuery) int64 {
 	return result.Total
 }
 
-func (p *QueryExampleItem) BuildQuery(in *pbsqlx.SqlQuery, f string, reserved bool, one bool) (string, []interface{}) {
+func (p *QueryExampleItem) BuildQuery(in *sql.SqlQuery, f string, reserved bool, one bool) (string, []interface{}) {
 	wh := ""
 	filter, filterValue := p.applyFilters(in.Filter)
 	field := p.field
@@ -189,7 +187,7 @@ func (p *QueryExampleItem) applyField() string {
 	return field
 }
 
-func (p *QueryExampleItem) applyFilters(filters []*pbsqlx.SqlFilter) (string, []interface{}) {
+func (p *QueryExampleItem) applyFilters(filters []*sql.SqlFilter) (string, []interface{}) {
 	filter := ""
 	var filterValue []interface{}
 	for key, val := range filters {
@@ -294,16 +292,16 @@ func (p *QueryExample) Value() (driver.Value, error) {
 }
 
 // BuildOneQuery - return one row
-func (p *QueryExample) BuildOneQuery(in *pbsqlx.SqlQuery, field string) (string, []interface{}) {
+func (p *QueryExample) BuildOneQuery(in *sql.SqlQuery, field string) (string, []interface{}) {
 	return p.BuildQuery(in, field, false, true)
 }
 
 // BuildMultiQuery - return rows
-func (p *QueryExample) BuildMultiQuery(in *pbsqlx.SqlQuery, field string) (string, []interface{}) {
+func (p *QueryExample) BuildMultiQuery(in *sql.SqlQuery, field string) (string, []interface{}) {
 	return p.BuildQuery(in, field, false, false)
 }
 
-func (p *QueryExample) Count(in *pbsqlx.SqlQuery) int64 {
+func (p *QueryExample) Count(in *sql.SqlQuery) int64 {
 	var result lib.Result
 	wh := ""
 	filter, args := p.applyFilters(in.Filter)
@@ -321,7 +319,7 @@ func (p *QueryExample) Count(in *pbsqlx.SqlQuery) int64 {
 	return result.Total
 }
 
-func (p *QueryExample) BuildQuery(in *pbsqlx.SqlQuery, f string, reserved bool, one bool) (string, []interface{}) {
+func (p *QueryExample) BuildQuery(in *sql.SqlQuery, f string, reserved bool, one bool) (string, []interface{}) {
 	wh := ""
 	filter, filterValue := p.applyFilters(in.Filter)
 	field := p.field
@@ -372,7 +370,7 @@ func (p *QueryExample) applyField() string {
 	return field
 }
 
-func (p *QueryExample) applyFilters(filters []*pbsqlx.SqlFilter) (string, []interface{}) {
+func (p *QueryExample) applyFilters(filters []*sql.SqlFilter) (string, []interface{}) {
 	filter := ""
 	var filterValue []interface{}
 	for key, val := range filters {
