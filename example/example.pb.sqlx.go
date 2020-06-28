@@ -95,7 +95,8 @@ func ExampleItemFieldsMap() map[string]interface{} {
 }
 
 func ExampleItemFieldsContain(item string) bool {
-	_, ok := p.defFields[item]
+	flds := ExampleItemFieldsMap()
+	_, ok := flds[item]
 	return ok
 }
 
@@ -276,7 +277,8 @@ func ExampleFieldsMap() map[string]interface{} {
 }
 
 func ExampleFieldsContain(item string) bool {
-	_, ok := p.defFields[item]
+	flds := ExampleFieldsMap()
+	_, ok := flds[item]
 	return ok
 }
 
